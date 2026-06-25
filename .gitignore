@@ -1,0 +1,16 @@
+# Environment files
+.env
+.env.*
+
+# Dependencies
+node_modules/
+
+# Uploads
+uploads/
+
+# Build files
+dist/
+build/
+
+# IDE
+.vscode/
