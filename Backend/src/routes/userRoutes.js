@@ -20,7 +20,7 @@ const upload = multer({ storage });
 
 userRouter.post('/signup', upload.single("profilePic"), signup)
 userRouter.post('/login', login)
-userRouter.post('/logout', logout);
+userRouter.post('/logout', protectRoute, logout);
 userRouter.put('/update-profile', protectRoute, upload.single("profilePic"), updateUser)
 userRouter.get('/check', protectRoute, checkAuth)
 

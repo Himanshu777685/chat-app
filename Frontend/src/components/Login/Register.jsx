@@ -1,10 +1,12 @@
 import React, { useContext, useState } from 'react'
 import { AuthContext } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 
 
 const Register = ({ setState }) => {
 
+    const navigate = useNavigate();
     const { login } = useContext(AuthContext);
     const [formData, setFormData] = useState({
         name: "",
@@ -44,7 +46,11 @@ const Register = ({ setState }) => {
             data.append("profilePic", formData.profilePicFile);
         }
 
-        await login("signup", data);
+        const success = await login("signup", data);
+        if(success){
+            navigate("/chat");
+        }
+        
     }
 
     return (

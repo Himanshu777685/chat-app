@@ -22,8 +22,10 @@ const LoginPart = ({ setState }) => {
         console.log(success);
 
         if(success){
-            navigate('/chat');
+            navigate("/chat")
         }
+
+        
     };
 
     const [formData, setFormData] = useState({

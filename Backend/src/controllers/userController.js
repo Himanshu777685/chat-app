@@ -158,6 +158,7 @@ export const logout = async (req, res) => {
 
 
         const userId = req.user?._id;
+        console.log(req.body);
         if (userId) {
             await User.findByIdAndUpdate(userId, {
                 isOnline: false,

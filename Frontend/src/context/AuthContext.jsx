@@ -3,6 +3,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
+
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 console.log(backendUrl);
 
@@ -10,6 +11,7 @@ axios.defaults.baseURL = backendUrl;
 axios.defaults.withCredentials = true;
 
 export const AuthContext = createContext();
+
 
 export const AuthProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(null);
@@ -43,11 +45,13 @@ export const AuthProvider = ({ children }) => {
         setAuthUser(data.user);
         connectSocket(data.user);
         toast.success(data.message);
+        
         console.log(data)
         return data.user;
 
       } else {
         toast.error(data.message);
+
       }
     } catch (error) {
       toast.error(

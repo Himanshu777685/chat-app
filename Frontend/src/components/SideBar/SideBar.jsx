@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { AuthContext } from "../../context/AuthContext";
 
 const SideBar = () => {
+
+  const {authUser , logout} = useContext(AuthContext)
+
   const [open, setOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
@@ -50,7 +54,8 @@ const SideBar = () => {
                 Profile
               </button>
 
-              <button className="block px-3 py-2 text-red-500">
+              <button className="block px-3 py-2 text-red-500"
+              onClick={logout}>
                 Logout
               </button>
             </div>
