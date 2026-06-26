@@ -214,13 +214,9 @@ export const updateUser = async (req, res) => {
 
                 const absolutePath = path.resolve(req.file.path);
 
-                console.log("ABSOLUTE PATH:", absolutePath);
-                console.log(cloudinary.config());
-
                 const uploadResponse = await cloudinary.uploader.upload(absolutePath, {
                     resource_type: "auto",
                 });
-
 
                 updateData.profilePic = uploadResponse.secure_url;
 

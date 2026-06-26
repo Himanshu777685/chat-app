@@ -45,36 +45,53 @@ export const ChatProvider = ({ children }) => {
     useEffect(() => {
         if (!socket) return;
 
-        socket.on("newMessage", (newMessage) => {
+        const handleNewMessage = (newMessage) => {
+            // If chat is open with sender → show in chat + mark seen
             if (selectedUser && newMessage.senderId === selectedUser._id) {
-                setMessages((prev) => [...prev, { ...newMessage, seen: true }]);
-                // ✅ error handled — silent fail is fine here, don't block UI
-                axios.put(`/api/messages/mark/${newMessage._id}`).catch(() => {});
-            } else {
+                setMessages((prev) => [
+                    ...prev,
+                    { ...newMessage, seen: true }
+                ]);
+
+                axios
+                    .put(`/api/messages/mark/${newMessage._id}`)
+                    .catch(() => { });
+            }
+            // Otherwise increase unseen count
+            else {
                 setUnseenMessages((prev) => ({
                     ...prev,
-                    [newMessage.senderId]: (prev[newMessage.senderId] || 0) + 1
+                    [newMessage.senderId]:
+                        (prev[newMessage.senderId] || 0) + 1
                 }));
             }
-        });
+        };
 
-        return () => socket.off("newMessage");
+        socket.on("newMessage", handleNewMessage);
+
+        
+        return () => {
+            socket.off("newMessage", handleNewMessage);
+        };
     }, [socket, selectedUser]);
 
-    const value = {
-        messages,
-        selectedUser,
-        sendMessage,
-        setSelectedUser,
-        unseenMessages,
-        setUnseenMessages,
-        getMessages,
-        isLoadingMessages,
-    }
 
-    return (
-        <ChatContext.Provider value={value}>
-            {children}
-        </ChatContext.Provider>
-    )
+
+
+const value = {
+    messages,
+    selectedUser,
+    sendMessage,
+    setSelectedUser,
+    unseenMessages,
+    setUnseenMessages,
+    getMessages,
+    isLoadingMessages,
+}
+
+return (
+    <ChatContext.Provider value={value}>
+        {children}
+    </ChatContext.Provider>
+)
 }
