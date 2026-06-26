@@ -46,10 +46,10 @@ const Register = ({ setState }) => {
             data.append("profilePic", formData.profilePicFile);
         }
 
-        const success = await login("signup", data);
-        if(success){
-            navigate("/chat");
-        }
+        const obj = await login("signup", data);
+        
+        console.log(obj);
+        
         
     }
 

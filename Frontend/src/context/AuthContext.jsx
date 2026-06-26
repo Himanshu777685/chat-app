@@ -40,23 +40,25 @@ export const AuthProvider = ({ children }) => {
         `/api/auth/${state}`,
         credentials
       );
-
+      console.log(data);
+      
       if (data.success) {
         setAuthUser(data.user);
         connectSocket(data.user);
         toast.success(data.message);
         
-        console.log(data)
         return data.user;
+      
 
       } else {
         toast.error(data.message);
-
+        
       }
     } catch (error) {
       toast.error(
         error.response?.data?.message || error.message
       );
+  
     }
   };
 

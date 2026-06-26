@@ -1,194 +1,214 @@
-import React from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { ChatContext } from '../../context/ChatContext';
+import { AuthContext } from '../../context/AuthContext';
+import toast from 'react-hot-toast';
 
+const MAX_IMAGE_SIZE_MB = 5;
 
 const ChatContainer = () => {
 
-  const selectedUser = {
-    id: "alice",
-    name: "Alice Johnson",
-    avatar: "https://i.pravatar.cc/150?img=1",
-    bio: "Frontend Developer",
-    online: true,
-  };
+    const scrollEnd = useRef(null);
+    const { messages, selectedUser, sendMessage, getMessages, isLoadingMessages } = useContext(ChatContext);
+    const { authUser , onlineUser} = useContext(AuthContext);
 
-  const messages = [
-    {
-      id: 1,
-      senderId: "alice",
-      text: "Hey! How's your chat app going?",
-      time: "10:30 AM",
-    },
-    {
-      id: 2,
-      senderId: "user",
-      text: "Pretty good. Just finished the sidebar.",
-      time: "10:31 AM",
-    },
-    {
-      id: 3,
-      senderId: "alice",
-      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-      time: "10:32 AM",
-    },
-    {
-      id: 4,
-      senderId: "user",
-      text: "Yep, currently designing message bubbles.",
-      time: "10:33 AM",
-    },
-    {
-      id: 5,
-      senderId: "alice",
-      text: "Don't forget auto-scroll later.",
-      time: "10:34 AM",
-    },
-    {
-      id: 6,
-      senderId: "user",
-      text: "Haha, that's on my checklist.",
-      time: "10:35 AM",
-    },
-    {
-      id: 7,
-      senderId: "alice",
-      text: "Are you using React state for selected chats?",
-      time: "10:36 AM",
-    },
-    {
-      id: 8,
-      senderId: "user",
-      text: "Not yet, currently using dummy data.",
-      time: "10:37 AM",
-    },
-    {
-      id: 9,
-      senderId: "alice",
-      text: "That's fine. Build the UI first.",
-      time: "10:38 AM",
-    },
-    {
-      id: 10,
-      senderId: "user",
-      text: "Exactly my plan.",
-      time: "10:39 AM",
-    },
-    {
-      id: 11,
-      senderId: "alice",
-      text: "Looks like you're making good progress 🚀",
-      time: "10:40 AM",
-    },
-    {
-      id: 12,
-      senderId: "user",
-      text: "Thanks! Hopefully I'll finish the UI today.",
-      time: "10:41 AM",
-    },
-  ];
+    const [input, setInput] = useState('');
+    const [isSending, setIsSending] = useState(false);
 
-  return (
-    <div className='h-full w-full flex flex-col border border-black bg-cover bg-center bg-no-repeat' style={{ backgroundImage: "url('/bg_chat2.jpg')" }}>
+    const handleSendMessage = async (e) => {
+        e.preventDefault();
+        if (input.trim() === "" || isSending) return;
 
-      <div className='flex items-center px-1 h-[7%] w-full justify-between bg-blue-50'>
+        setIsSending(true);
+        try {
+            await sendMessage({ text: input.trim() });
+            setInput("");
+        } finally {
+            // ✅ always resets even if sendMessage throws
+            setIsSending(false);
+        }
+    }
 
-        <div className='flex items-center  gap-3'>
-          <div className='relative ml-4 '>
-            <img src={selectedUser.avatar} alt={selectedUser.id} className=' h-12 w-12 rounded-full ' />
-            {selectedUser.online && <div className='absolute bottom-0 right-0 h-4 w-4 rounded-full bg-green-400 border-3 border-blue-50'></div>}
-          </div>
-
-          <div className='font-semibold text-lg '>{selectedUser.name}</div>
-        </div>
-
-        <img
-          src="info_icon.png"
-          className='mr-5 h-10 w-10 cursor-pointer' />
-
-      </div>
-
-
-      {/* CHAT AREA */}
-
-      <div className='flex-1 overflow-y-auto scrollbar-thin p-4 space-y-4'>
-
-        {
-          messages.map((message) => (
-            <div key={message.id}>
-
-              {message.senderId === selectedUser.id ?
-
-                (<div className="flex items-start gap-2">
-                  <img
-                    src={selectedUser.avatar}
-                    alt={selectedUser.name}
-                    className="h-8 w-8 rounded-full"
-                  />
-
-                  <div className="max-w-[70%] bg-white px-4 py-2 rounded-2xl rounded-tl-sm shadow">
-                    {message.image && (
-                      <img
-                        src={message.image}
-                        alt="Shared image"
-                        className="max-w-full rounded-lg mb-2"
-                      />
-                    )}
-
-                    {message.text && <p>{message.text}</p>}
-                    <span className="text-xs text-gray-500">{message.time}</span>
-                  </div>
-                </div>)
-                :
-
-                (<div className="flex justify-end">
-                  <div className="max-w-[70%] bg-blue-500 text-white px-4 py-2 rounded-2xl rounded-tr-sm shadow">
-                    <p>{message.text}</p>
-                    <span className="text-xs text-blue-100">
-                      {message.time}
-                    </span>
-                  </div>
-                </div>)}
-
-            </div>
-          ))
+    const handleSendImage = async (e) => {
+        const file = e.target.files[0];
+        if (!file || !file.type.startsWith("image/")) {
+            toast.error("Select an image file");
+            return;
         }
 
-      </div>
+        // ✅ file size guard
+        if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+            toast.error(`Image must be under ${MAX_IMAGE_SIZE_MB}MB`);
+            e.target.value = "";
+            return;
+        }
 
+        // ✅ same isSending guard as text
+        if (isSending) return;
+        setIsSending(true);
 
-      {/* footer section (message typing area) */}
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+            try {
+                await sendMessage({ image: reader.result });
+            } finally {
+                setIsSending(false);
+                e.target.value = "";
+            }
+        }
+        reader.onerror = () => {
+            toast.error("Failed to read image");
+            setIsSending(false);
+            e.target.value = "";
+        }
+        reader.readAsDataURL(file);
+    }
 
-      <div className='rounded-3xl flex mb-3 items-center  self-center bg-blue-100 border h-[6%] w-[98%]'>
+    useEffect(() => {
+        if (selectedUser) {
+          console.log('seleteduser:' , selectedUser)
+          console.log('seleteduserId:' , selectedUser._id)
+          console.log("auth user:" , authUser)
+            getMessages(selectedUser._id);
+        }
+    }, [selectedUser]);
 
-        <label htmlFor="file">
-          <img
-            src='attachment_icon.png'
-            className='h-10 w-10 mx-2 cursor-pointer' />
+    useEffect(() => {
+        scrollEnd.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
 
-        </label>
+    if (!selectedUser) {
+        return (
+            <div className="flex items-center justify-center h-full text-gray-500">
+                Select a user to start chatting
+            </div>
+        );
+    }
 
-        <input
-          id="file"
-          type="file"
-          hidden
-        />
+    return (
+        <div
+            className='h-full w-full flex flex-col border border-black bg-cover bg-center bg-no-repeat'
+            style={{ backgroundImage: "url('/bg_chat2.jpg')" }}
+        >
+            {/* Header */}
+            <div className='flex items-center px-1 h-[7%] w-full justify-between bg-blue-50'>
+                <div className='flex items-center gap-3'>
+                    <div className='relative ml-4'>
+                        <img
+                            src={selectedUser?.profilePic || 'avatar.jpg'}
+                            alt={selectedUser?.name}
+                            className='h-12 w-12 rounded-full'
+                        />
+                        {onlineUser?.includes(selectedUser._id)  && (
+                            <div className='absolute bottom-0 right-0 h-4 w-4 rounded-full bg-green-400 border-2 border-blue-50' />
+                        )}
+                    </div>
+                    <div className='font-semibold text-lg'>{selectedUser?.name}</div>
+                </div>
+                <img src="info_icon.png" className='mr-5 h-10 w-10 cursor-pointer' alt="info" />
+            </div>
 
-        <input
-          type="text"
-          placeholder="Type a message..."
-          className='flex-1 h-[80%] outline-none'
-        />
+            {/* Chat Area */}
+            <div className='flex-1 overflow-y-auto scrollbar-thin p-4 space-y-4'>
+                {isLoadingMessages ? (
+                    <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                        Loading messages...
+                    </div>
+                ) : messages.length === 0 ? (
+                    <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                        No messages yet. Say hello!
+                    </div>
+                ) : (
+                    messages.map((message) => (
+                        <div key={message._id}>
+                            {message.senderId === authUser?._id ? (
 
-        <button>
-          <img src='send_icon.png'
-            className='h-8 w-8 mx-5 cursor-pointer ' />
-        </button>
+                                // Sent message — avatar on the RIGHT
+                                <div className="flex justify-end items-end gap-2">
+                                    <div className="max-w-[70%] bg-blue-500 text-white px-4 py-2 rounded-2xl rounded-tr-sm shadow">
+                                        {message.image && (
+                                            <img
+                                                src={message.image}
+                                                alt="Shared"
+                                                className="max-w-[200px] rounded-lg mb-2"
+                                            />
+                                        )}
+                                        {message.text && <p>{message.text}</p>}
+                                        <span className="text-xs text-blue-100">
+                                            {new Date(message.createdAt).toLocaleString()}
+                                        </span>
+                                    </div>
+                                    <img
+                                        src={authUser?.profilePic || 'avatar.jpg'}
+                                        alt={authUser?.name}
+                                        className="h-8 w-8 rounded-full"
+                                    />
+                                </div>
 
-      </div>
+                            ) : (
 
+                                // Received message — avatar on the LEFT
+                                <div className="flex justify-start items-end gap-1.5">
+                                    <img
+                                        src={selectedUser?.profilePic || 'avatar.jpg'}
+                                        alt={selectedUser?.name}
+                                        className="h-8 w-8 rounded-full"
+                                    />
+                                    <div className="max-w-[70%] bg-white px-4 py-2 rounded-2xl rounded-tl-sm shadow">
+                                        {message.image && (
+                                            <img
+                                                src={message.image}
+                                                alt="Shared image"
+                                                className="max-w-[200px] rounded-lg mb-2"
+                                            />
+                                        )}
+                                        {message.text && <p>{message.text}</p>}
+                                        <span className="text-xs text-gray-500">
+                                            {new Date(message.createdAt).toLocaleString()}
+                                        </span>
+                                    </div>
+                                </div>
 
+                            )}
+                        </div>
+                    ))
+                )}
+                <div ref={scrollEnd} />
+            </div>
 
-    </div>
-  )
+            {/* Footer */}
+            <div className='rounded-3xl flex mb-3 items-center self-center bg-blue-100 border h-[6%] w-[98%]'>
+                <label htmlFor="file" className={isSending ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}>
+                    <img src='attachment_icon.png' className='h-10 w-10 mx-2' alt="attach" />
+                </label>
+
+                <input
+                    id="file"
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    disabled={isSending}
+                    onChange={handleSendImage}
+                />
+
+                <input
+                    onChange={(e) => setInput(e.target.value)}
+                    type="text"
+                    value={input}
+                    onKeyDown={(e) => e.key === "Enter" ? handleSendMessage(e) : null}
+                    placeholder="Type a message..."
+                    className='flex-1 h-[80%] outline-none bg-transparent'
+                    disabled={isSending}
+                />
+
+                <img
+                    src='send_icon.png'
+                    alt="send"
+                    className={`h-8 w-8 mx-5 ${isSending ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    onClick={!isSending ? handleSendMessage : undefined}
+                />
+            </div>
+        </div>
+    )
 }
 
 export default ChatContainer
