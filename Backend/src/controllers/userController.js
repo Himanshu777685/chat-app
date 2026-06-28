@@ -164,9 +164,11 @@ export const logout = async (req, res) => {
                 isOnline: false,
             })
         }
-
-
-        res.clearCookie("token");
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none"
+        });
 
         res.status(200).json({
             success: true,
@@ -184,12 +186,8 @@ export const logout = async (req, res) => {
 
 export const updateUser = async (req, res) => {
     try {
+
         console.log("BODY:", req.body);
-
-        console.log(process.env.CLOUDINARY_CLOUD_NAME);
-        console.log(process.env.CLOUDINARY_API_KEY);
-        console.log(process.env.CLOUDINARY_API_SECRET);
-
 
         const name = req.body?.name;
         const bio = req.body?.bio;
@@ -238,6 +236,8 @@ export const updateUser = async (req, res) => {
             updateData,
             { new: true }
         ).select("-password");
+        
+        console.log('updated user: ' , updateUser);
 
         res.json({ success: true, user: updatedUser });
 
