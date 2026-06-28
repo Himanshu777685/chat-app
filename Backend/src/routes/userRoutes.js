@@ -5,13 +5,17 @@ import { checkAuth, login, logout, signup, updateUser } from "../controllers/use
 import path from "path";
 
 const userRouter = express.Router();
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "uploads/");
+const upload = multer({
+    storage,
+    limits: {
+        fileSize: 7 * 1024 * 1024, // 5MB
     },
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname); // .png .jpg etc
-        cb(null, Date.now() + ext);
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith("image/")) {
+            cb(null, true);
+        } else {
+            cb(new Error("Only image files are allowed"), false);
+        }
     },
 });
 

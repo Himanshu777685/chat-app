@@ -32,7 +32,8 @@ export const signup = async (req, res) => {
         let imageUrl = "";
 
         if (req.file) {
-            const uploadResponse = await cloudinary.uploader.upload(req.file.path);
+
+            const uploadResponse = await cloudinary.uploader.upload(req.file.buffer);
 
             imageUrl = uploadResponse.secure_url;
         }
@@ -210,9 +211,9 @@ export const updateUser = async (req, res) => {
                 console.log("FILE:", req.file);
                 console.log("FILE PATH:", req.file.path);
 
-                const absolutePath = path.resolve(req.file.path);
+                
 
-                const uploadResponse = await cloudinary.uploader.upload(absolutePath, {
+                const uploadResponse = await cloudinary.uploader.upload(req.file.buffer, {
                     resource_type: "auto",
                 });
 
@@ -236,15 +237,15 @@ export const updateUser = async (req, res) => {
             updateData,
             { new: true }
         ).select("-password");
-        
-        console.log('updated user: ' , updateUser);
+
+        console.log('updated user: ' , updatedUser);
 
         res.json({ success: true, user: updatedUser });
 
     } catch (error) {
         console.log(error.message);
-        console.log("Cloudinary error:", err);
-        console.log("Cloudinary error message:", err.message);
+        console.log("Cloudinary error:", error);
+        console.log("Cloudinary error message:", error.message);
         res.status(500).json({
             success: false,
             message: error.message
