@@ -6,7 +6,7 @@ import path from "path";
 
 const userRouter = express.Router();
 const upload = multer({
-    storage,
+    storage : multer.memoryStorage(),
     limits: {
         fileSize: 7 * 1024 * 1024, // 5MB
     },
