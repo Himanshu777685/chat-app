@@ -29,7 +29,7 @@ export const ChatProvider = ({ children }) => {
 
     useEffect(()=>{
         fetchUsers();
-    },[])
+    },[authUser])
 
     const getMessages = async (userId) => {
         setIsLoadingMessages(true);
