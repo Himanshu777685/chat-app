@@ -4,21 +4,23 @@ import Register from '../../components/Login/Register';
 
 const Login = () => {
 
-  const[state , setState] = useState("Login");
+  const [state, setState] = useState("Login");
 
   return (
 
 
-    <div className='flex flex-row items-center justify-center  h-screen w-full '>
+    <div className="flex flex-col lg:flex-row items-center justify-center min-h-screen w-full px-4 py-6">
+      <div className="w-full lg:w-[45%] flex items-center justify-center mb-6 lg:mb-0">
+        <img
+          src="login.webp"
+          className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl h-auto object-contain"
+        />
+      </div>
+      <div className="w-full lg:w-[45%] flex items-center justify-center">
+        {state === "Login" ? <LoginPart setState={setState} /> : <Register setState={setState} />}
+      </div>
 
-        <div className=' h-[80%] w-[40%] flex flex-col items-center justify-center '>
-          <img src="login.webp" className=" object-contain"   className="w-[70vw] h-auto object-contain"></img>
-        </div>
-        <div className=' h-[80%] w-[40%] flex flex-col items-center justify-center '>
-         {state === "Login" ? <LoginPart setState = {setState} /> :  <Register  setState = {setState} />}
-        </div>
-        
-    </div> 
+    </div>
   )
 }
 

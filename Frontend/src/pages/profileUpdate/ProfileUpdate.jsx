@@ -47,7 +47,7 @@ const ProfileUpdate = () => {
       newData.append("bio", formData.bio);
 
       if (imageChanged && file) {
-        newData.append("profilePic", file); 
+        newData.append("profilePic", file);
       }
 
       await updateProfile(newData);
@@ -71,10 +71,10 @@ const ProfileUpdate = () => {
   }, [authUser]);
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
-      <div className="bg-white flex justify-around items-center shadow-lg rounded-xl p-8 w-[70%]">
-        <div className='h-full max-w-md w-full'>
-          <h2 className="text-3xl font-bold text-blue-600 text-center mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-6">
+      <div className="bg-white w-full max-w-6xl flex flex-col-reverse lg:flex-row items-center justify-around shadow-lg rounded-xl p-6 md:p-8 gap-8">
+        <div className="w-full max-w-md">
+          <h2 className="text-2xl md:text-3xl font-bold text-blue-600 text-center mb-6">
             Update Profile
           </h2>
 
@@ -91,7 +91,7 @@ const ProfileUpdate = () => {
                 <img
                   src={preview}
                   alt="avatar"
-                  className="h-40 w-40 rounded-full object-cover"
+                  className="w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full object-cover"
                 />
                 {/* ✅ Visual hint that image is clickable */}
                 <div className="absolute bottom-1 right-1 bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
@@ -103,7 +103,7 @@ const ProfileUpdate = () => {
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className='text-xl font-semibold'>Name</label>
+              <label className="text-lg md:text-xl font-semibold">Name</label>
               <input
                 type="text"
                 name="name"
@@ -115,7 +115,7 @@ const ProfileUpdate = () => {
             </div>
 
             <div className="mb-4">
-              <label className='text-xl font-semibold'>Bio</label>
+              <label className="text-lg md:text-xl font-semibold">Bio</label>
               <textarea
                 name="bio"
                 rows="3"
@@ -128,15 +128,18 @@ const ProfileUpdate = () => {
 
             <button
               type="submit"
-              className='w-full bg-blue-600 text-white self-center text-lg px-6 py-2 rounded-xl hover:bg-blue-700 transition'
-            >
+              className="w-full bg-blue-600 text-white text-base md:text-lg px-6 py-3 rounded-xl hover:bg-blue-700 transition"          >
               Save Changes
             </button>
           </form>
         </div>
 
-        <div>
-          <img src="logo.png" alt="" />
+        <div className="flex justify-center w-full lg:w-auto">
+          <img
+            src="logo.png"
+            alt=""
+            className="w-10 sm:w-40 md:w-64 lg:w-72 h-auto "
+          />
         </div>
       </div>
     </div>
