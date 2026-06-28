@@ -34,7 +34,7 @@ export const signup = async (req, res) => {
 
         if (req.file) {
 
-            const uploadResponse = await cloudinary.uploader.upload(req.file.buffer);
+            const uploadResponse = await uploadFromBuffer(req.file.buffer);
 
             imageUrl = uploadResponse.secure_url;
         }
@@ -209,14 +209,12 @@ export const updateUser = async (req, res) => {
             // }
 
             try {
-                console.log("FILE:", req.file);
-                console.log("FILE PATH:", req.file.path);
+                // console.log("FILE:", req.file);
+                // console.log("FILE PATH:", req.file.path);
 
                 
 
-                const uploadResponse = await cloudinary.uploader.upload(req.file.buffer, {
-                    resource_type: "auto",
-                });
+                const uploadResponse = await uploadFromBuffer(req.file.buffer);
 
                 updateData.profilePic = uploadResponse.secure_url;
 
