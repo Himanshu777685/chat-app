@@ -19,7 +19,7 @@ const upload = multer({
     },
 });
 
-const upload = multer({ storage });
+
 
 
 userRouter.post('/signup', upload.single("profilePic"), signup)
