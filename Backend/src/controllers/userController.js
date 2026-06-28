@@ -59,8 +59,8 @@ export const signup = async (req, res) => {
 
         res.cookie("token", token, {
             httpOnly: true,
-            sameSite: "lax",
-            secure: process.env.NODE_ENV === "production",
+            sameSite: "none",
+            secure: true,
         });
 
         res.json({
@@ -111,8 +111,8 @@ export const login = async (req, res) => {
 
         res.cookie("token", token, {
             httpOnly: true,
-            sameSite: "lax",
-            secure: process.env.NODE_ENV === "production",
+            sameSite: "none",
+            secure: true,
         });
 
         const userwithoutpass = {
