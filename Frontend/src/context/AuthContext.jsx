@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
 
+
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 console.log(backendUrl);
 
@@ -46,7 +47,6 @@ export const AuthProvider = ({ children }) => {
         setAuthUser(data.user);
         connectSocket(data.user);
         toast.success(data.message);
-        
         return data.user;
       
 

@@ -33,6 +33,7 @@ const Register = ({ setState }) => {
     };
 
     const handleSubmit = async (e) => {
+        const navigate = useNavigate();
         e.preventDefault();
         console.log(formData)
 
@@ -47,6 +48,9 @@ const Register = ({ setState }) => {
         }
 
         const obj = await login("signup", data);
+        if(obj.success){
+            navigate("/chat")
+        }
         
         console.log(obj);
         
