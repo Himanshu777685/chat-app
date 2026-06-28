@@ -1,7 +1,7 @@
 import Message from "../models/messages.js";
 import User from "../models/User.js";
 import cloudinary from "../cloudinary.js";
-import { io , userSocketMap } from "../../server.js";
+import { io, userSocketMap } from "../../server.js";
 
 
 export const getUsersForSidebar = async (req, res) => {
@@ -12,49 +12,55 @@ export const getUsersForSidebar = async (req, res) => {
       _id: { $ne: loggedInUserId },
     }).select("-password");
 
-    //no. of messages not seen
+    const unseenmessages = {};
 
-    const unseenmessages = {}
-    const lastMessages = {}
+    const usersWithLastMessage = await Promise.all(
+      filteredUsers.map(async (user) => {
+        // Unseen messages
+        const messages = await Message.find({
+          senderId: user._id,
+          receiverId: loggedInUserId,
+          seen: false,
+        });
 
+        if (messages.length > 0) {
+          unseenmessages[user._id] = messages.length;
+        }
 
-    const promises = filteredUsers.map(async (user) => {
-      const messages = await Message.find({ senderId: user._id, receiverId: loggedInUserId, seen: false });
+        // Last message between logged in user and this user
+        const lastMessage = await Message.findOne({
+          $or: [
+            {
+              senderId: loggedInUserId,
+              receiverId: user._id,
+            },
+            {
+              senderId: user._id,
+              receiverId: loggedInUserId,
+            },
+          ],
+        }).sort({ createdAt: -1 });
 
-      if (messages.length > 0) {
-        unseenmessages[user._id] = messages.length;
-      }
-
-
-      const lastMessage = await Message.findOne({
-        $or: [
-          {
-            senderid: loggedInUserId,
-            receiverId: user._id
-          }, {
-            senderId: user._id,
-            receiverId: loggedInUserId,
-          }
-        ]
-      }).sort({ createdAt: -1 });
-
-      if (lastMessage) {
-        lastMessages[user._id] = {
-          text: lastMessage.text,
-          image: lastMessage.image,
-          time: lastMessage.createdAt,
+        return {
+          ...user.toObject(),
+          lastMessage: lastMessage
+            ? {
+              text: lastMessage.text,
+              image: lastMessage.image,
+              senderId: lastMessage.senderId,
+              createdAt: lastMessage.createdAt,
+            }
+            : null,
         };
-      }
+      })
+    );
 
-
+    res.status(200).json({
+      success: true,
+      users: usersWithLastMessage,
+      unseenmessages,
     });
-
-    await Promise.all(promises);
-
-    res.status(200).json({ success: true, users: filteredUsers, unseenmessages, lastMessages });
-
   } catch (error) {
-
     console.log(error.message);
 
     res.status(500).json({
@@ -63,6 +69,7 @@ export const getUsersForSidebar = async (req, res) => {
     });
   }
 };
+
 
 
 export const getMessages = async (req, res) => {
@@ -166,10 +173,10 @@ export const sendMessage = async (req, res) => {
 
 
     const receiverSocketId = userSocketMap[receiverId];
-    if(receiverSocketId){
+    if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage)
     }
-    
+
 
     res.status(200).json({
       success: true,

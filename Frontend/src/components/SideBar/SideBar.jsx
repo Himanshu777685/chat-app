@@ -14,29 +14,14 @@ const SideBar = () => {
     setSelectedUser,
     unseenMessages,
     setUnseenMessages,
+    users,
   } = useContext(ChatContext);
 
   const [open, setOpen] = useState(false);
-  const [users, setUsers] = useState([]);
+
   const [query, setQuery] = useState("");
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/messages/users`
-        );
-
-        setUsers(res.data.users);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
-
-    fetchUser();
-  }, []);
 
   // FILTER USERS
   const filteredUsers = users.filter((user) =>
@@ -99,6 +84,20 @@ const SideBar = () => {
           const isActive = selectedUser?._id === user._id;
           const unread = unseenMessages[user._id] || 0;
 
+          const messagePreview = user.lastMessage
+            ? user.lastMessage.image
+              ? `${user.lastMessage.senderId === authUser._id ? "You: " : ""}📷 Photo`
+              : `${user.lastMessage.senderId === authUser._id ? "You: " : ""}${user.lastMessage.text || "Message"}`
+            : "No messages yet";
+
+          const lastMessageTime = user.lastMessage
+            ? new Date(user.lastMessage.createdAt).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+            : "";
+
+
           return (
             <div
               key={user._id}
@@ -123,9 +122,25 @@ const SideBar = () => {
               </div>
 
               {/* INFO */}
-              <div className="flex-1">
-                <h3 className="font-semibold">{user.name}</h3>
-                <p className="text-sm text-gray-500">{user.email}</p>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold truncate">{user.name}</h3>
+
+                  {lastMessageTime && (
+                    <span className={`text-xs ml-2 shrink-0 ${unseenMessages[user._id]
+                        ? "text-blue-600 font-semibold"
+                        : "text-gray-400"
+                      }`}>
+                      {lastMessageTime}
+                    </span>
+                  )}
+                </div>
+                <p className={`text-sm truncate ${unseenMessages[user._id]
+                  ? "text-blue-600 font-medium"
+                  : "text-gray-500"
+                  }`}>
+                  {messagePreview}
+                </p>
               </div>
 
               {/* UNREAD BADGE */}

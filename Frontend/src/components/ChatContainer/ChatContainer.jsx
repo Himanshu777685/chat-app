@@ -89,7 +89,7 @@ const ChatContainer = () => {
     return (
         <div
             className='h-full w-full flex flex-col border border-black be-cover bg-linear-to-br from-slate-100 to-blue-300'
-            
+
         >
             {/* Header */}
             <div className='flex items-center px-1  py-3 w-full justify-between bg-linear-to-r from-blue-600 to-cyan-500 text-white'>
@@ -139,7 +139,7 @@ const ChatContainer = () => {
                     </div>
                 ) : messages.length === 0 ? (
                     <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-                        <img src='no-message.png' className='w-80 h-auto shadow-lg rounded-full'/>
+                        <img src='no-message.png' className='w-80 h-auto shadow-lg rounded-full' />
                     </div>
                 ) : (
                     messages.map((message) => (
@@ -148,7 +148,7 @@ const ChatContainer = () => {
 
                                 // Sent message — avatar on the RIGHT
                                 <div className="flex justify-end items-end gap-2">
-                                    <div className="max-w-[70%] bg-blue-500 text-white px-4 py-3 rounded-3xl rounded-tr-sm shadow-md">
+                                    <div className="max-w-[70%] min-w-0 overflow-hidden bg-blue-500 text-white px-4 py-3 rounded-3xl rounded-tr-sm shadow-md">
                                         {message.image && (
                                             <PhotoView src={message.image}>
                                                 <img
@@ -158,7 +158,7 @@ const ChatContainer = () => {
                                                 />
                                             </PhotoView>
                                         )}
-                                        {message.text && <p>{message.text}</p>}
+                                        {message.text && <p className='break-all whitespace-pre-wrap'  style={{ overflowWrap: "anywhere" }}>{message.text}</p>}
                                         <span className="text-xs text-blue-100">
                                             {new Date(message.createdAt).toLocaleString()}
                                         </span>
@@ -179,7 +179,7 @@ const ChatContainer = () => {
                                         alt={selectedUser?.name}
                                         className="h-8 w-8 rounded-full"
                                     />
-                                    <div className="max-w-[70%] bg-white px-4 py-3 rounded-3xl rounded-tl-sm shadow-md">
+                                    <div className="max-w-[70%] min-w-0 overflow-hidden bg-white px-4 py-3 rounded-3xl rounded-tl-sm shadow-md">
                                         {message.image && (
                                             <PhotoView src={message.image}>
                                                 <img
@@ -189,7 +189,13 @@ const ChatContainer = () => {
                                                 />
                                             </PhotoView>
                                         )}
-                                        {message.text && <p>{message.text}</p>}
+
+                                        {message.text && (
+                                            <p className="break-all whitespace-pre-wrap"  style={{ overflowWrap: "anywhere" }}>
+                                                {message.text}
+                                            </p>
+                                        )}
+
                                         <span className="text-xs text-gray-500">
                                             {new Date(message.createdAt).toLocaleString()}
                                         </span>
