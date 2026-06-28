@@ -4,6 +4,7 @@ import { generateToken } from "../utils/generate_token.js";
 // import { v2 as cloudinary } from "cloudinary";
 import cloudinary from "../cloudinary.js";
 import path from 'path'
+import { uploadFromBuffer } from "../utils/uploadFromBuffer.js";
 
 
 export const signup = async (req, res) => {
