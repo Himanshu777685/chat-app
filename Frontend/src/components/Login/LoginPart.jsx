@@ -13,7 +13,6 @@ const LoginPart = ({ setState }) => {
         if (!formData.email || !formData.password) {
             return;
         }
-
         console.log(formData);
 
         const success = await login("login", formData);
