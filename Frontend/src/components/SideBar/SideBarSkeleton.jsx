@@ -1,20 +1,20 @@
 import React from 'react'
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const SideBarSkeleton = () => {
-    return (
-        <div className="w-full">
-            {[...Array(8)].map((_, index) => (
+ return (
+        <div className="space-y-4 p-4">
+            {Array.from({ length: 8 }).map((_, i) => (
                 <div
-                    key={index}
-                    className="flex items-center gap-3 p-3 animate-pulse"
+                    key={i}
+                    className="flex items-center gap-3"
                 >
-                    {/* Avatar */}
-                    <div className="w-12 h-12 rounded-full bg-base-300"></div>
+                    <Skeleton circle width={48} height={48} />
 
-                    {/* User Info */}
                     <div className="flex-1">
-                        <div className="h-4 w-32 rounded bg-base-300 mb-2"></div>
-                        <div className="h-3 w-20 rounded bg-base-300"></div>
+                        <Skeleton height={18} width="70%" />
+                        <Skeleton height={14} width="40%" />
                     </div>
                 </div>
             ))}

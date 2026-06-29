@@ -19,9 +19,6 @@ const SideBar = () => {
     isLoadingUsers,
   } = useContext(ChatContext);
 
-  if(isLoadingUsers){
-    return <SideBarSkeleton />
-  }
 
   const [open, setOpen] = useState(false);
 
@@ -84,6 +81,8 @@ const SideBar = () => {
       </div>
 
       {/* USERS LIST */}
+
+
       <div className="flex-1  overflow-y-auto">
 
         {filteredUsers.map((user) => {
@@ -103,6 +102,10 @@ const SideBar = () => {
             })
             : "";
 
+
+          if (isLoadingUsers) {
+            return <SideBarSkeleton />
+          }
 
           return (
             <div
@@ -134,8 +137,8 @@ const SideBar = () => {
 
                   {lastMessageTime && (
                     <span className={`text-xs ml-2 shrink-0 ${unseenMessages[user._id]
-                        ? "text-blue-600 font-semibold"
-                        : "text-gray-400"
+                      ? "text-blue-600 font-semibold"
+                      : "text-gray-400"
                       }`}>
                       {lastMessageTime}
                     </span>

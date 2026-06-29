@@ -4,6 +4,7 @@ import { AuthContext } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import { PhotoView } from "react-photo-view";
 import { ArrowLeft } from "lucide-react";
+import ChatSkeleton from './ChatSkeleton';
 
 const MAX_IMAGE_SIZE_MB = 5;
 
@@ -12,6 +13,8 @@ const ChatContainer = () => {
     const scrollEnd = useRef(null);
     const { messages, selectedUser, sendMessage, getMessages, isLoadingMessages, setSelectedUser } = useContext(ChatContext);
     const { authUser, onlineUser } = useContext(AuthContext);
+
+   
 
     const [input, setInput] = useState('');
     const [isSending, setIsSending] = useState(false);
@@ -134,9 +137,7 @@ const ChatContainer = () => {
             {/* Chat Area */}
             <div className='flex-1 overflow-y-auto scrollbar-none p-4 space-y-4'>
                 {isLoadingMessages ? (
-                    <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-                        Loading messages...
-                    </div>
+                    <ChatSkeleton />
                 ) : messages.length === 0 ? (
                     <div className="flex items-center justify-center h-full text-gray-400 text-sm">
                         <img src='no-message.png' className='w-80 h-auto shadow-lg rounded-full' />
