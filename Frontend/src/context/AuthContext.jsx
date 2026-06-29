@@ -18,6 +18,7 @@ export const AuthProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(null);
   const [onlineUser, setOnlineUser] = useState([]);
   const [socket, setSocket] = useState(null);
+  const[isUpdating , setIsUpdating] = useState(false);
 
   // Check if user is already logged in
   const checkAuth = async () => {
@@ -65,6 +66,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (body) => {
     try {
+      setIsUpdating(true)
       const { data } = await axios.put('/api/auth/update-profile', body, {
         withCredentials: true,
         
@@ -76,6 +78,8 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
+    }finally{
+      setIsUpdating(false)
     }
   }
 
@@ -138,6 +142,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateProfile,
     checkAuth,
+    isUpdating
   };
 
   return (

@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 
 const ProfileUpdate = () => {
 
-  const { authUser, updateProfile } = useContext(AuthContext);
+  const { authUser, updateProfile, isUpdating } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -128,8 +128,17 @@ const ProfileUpdate = () => {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white text-base md:text-lg px-6 py-3 rounded-xl hover:bg-blue-700 transition"          >
-              Save Changes
+              className="w-full bg-blue-600 text-white text-base md:text-lg px-6 py-3 rounded-xl hover:bg-blue-700 transition"
+              disabled={isUpdating}
+            >
+              {isUpdating ? (
+                <>
+                  <span className="loading loading-spinner loading-sm"></span>
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
             </button>
           </form>
         </div>
