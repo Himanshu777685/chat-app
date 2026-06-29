@@ -10,12 +10,14 @@ export const ChatProvider = ({ children }) => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [unseenMessages, setUnseenMessages] = useState({});
     const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+    const [isLoadingUsers, setIsLoadingUsers] = useState(false);
     const [users, setUsers] = useState([]);
 
     const { socket, axios, authUser } = useContext(AuthContext);
 
     const fetchUsers = async () => {
         try {
+            setIsLoadingUsers(true);
             const { data } = await axios.get("/api/messages/users");
 
             if (data.success) {
@@ -24,6 +26,8 @@ export const ChatProvider = ({ children }) => {
             }
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingUsers(false);
         }
     };
 
@@ -165,6 +169,7 @@ export const ChatProvider = ({ children }) => {
         setUnseenMessages,
         getMessages,
         isLoadingMessages,
+        isLoadingUsers,
         users,
         setUsers,
         fetchUsers,

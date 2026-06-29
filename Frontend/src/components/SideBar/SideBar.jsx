@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
+import SideBarSkeleton from "./SideBarSkeleton";
 
 
 const SideBar = () => {
@@ -15,7 +16,12 @@ const SideBar = () => {
     unseenMessages,
     setUnseenMessages,
     users,
+    isLoadingUsers,
   } = useContext(ChatContext);
+
+  if(isLoadingUsers){
+    return <SideBarSkeleton />
+  }
 
   const [open, setOpen] = useState(false);
 
