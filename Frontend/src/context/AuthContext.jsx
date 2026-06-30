@@ -40,7 +40,8 @@ export const AuthProvider = ({ children }) => {
       console.log("Sending:", credentials)
       const { data } = await axios.post(
         `/api/auth/${state}`,
-        credentials
+        credentials,
+        {withCredentials : true}
       );
       console.log(data);
       

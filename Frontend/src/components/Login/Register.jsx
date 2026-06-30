@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const Register = ({ setState }) => {
 
     const navigate = useNavigate();
+    
     const { login } = useContext(AuthContext);
     const [formData, setFormData] = useState({
         name: "",
@@ -33,7 +34,6 @@ const Register = ({ setState }) => {
     };
 
     const handleSubmit = async (e) => {
-        const navigate = useNavigate();
         e.preventDefault();
         console.log(formData)
 
