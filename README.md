@@ -4,7 +4,7 @@ A modern full-stack real-time chat application built using the MERN stack. Users
 
 ## 🚀 Live Demo
 
-**Frontend:** *chat-app-one-snowy-54.vercel.app*
+**Frontend:** *https://chat-app-one-snowy-54.vercel.app*
 
 **Backend API:** *https://chat-app-x61y.onrender.com*
 
